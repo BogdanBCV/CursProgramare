@@ -1,0 +1,47 @@
+
+  .blue {
+    display: flex;
+    justify-content: center;
+color: blue;
+font-style: italic;
+padding-bottom: 30px;
+  }
+  .circle{
+    width: 100px;
+    clip-path: circle();
+    display: flex;
+    position:relative ;
+    align-items: center;
+    
+  }
+  .wrapper-with-scroll {
+  
+    height: 400px;
+    border-left: 1px solid black;
+    overflow-y: scroll;
+    
+    width:70%;
+    float: right;
+  }
+  .wrapper-no-scroll {
+   
+    height: 400px;
+   
+    overflow-y: auto;
+   float: left;
+    width: 25%;
+   
+  }
+  .huge-container {
+    padding: 10px;
+  }
+  
+  .fixed-red {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    position: absolute;
+    z-index: 999;
+  }
+  
+ 
