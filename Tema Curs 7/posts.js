@@ -1,35 +1,7 @@
-function runWeatherApp() {
-  var weatherKey = "3e20f53fb2ef40e28bf95905221510";
-  var weatherBaseUrl = "https://api.weatherapi.com/v1";
 
-  var temperatureButtonEl = document.querySelector("#temperature-button");
-  temperatureButtonEl.addEventListener("click", onTemperatureButtonClick);
-  var temperatureContainerEl = document.querySelector("#temperature-container");
-
-  function onTemperatureButtonClick() {
-    var queryParams = "key=" + weatherKey + "&q=Craiova";
-    fetch(weatherBaseUrl + "/current.json?" + queryParams)
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (weather) {
-        var myWeather = weather || {};
-        var currentWeather = myWeather.current || {};
-        var temperature = currentWeather.temp_c || null;
-        if (temperature !== null) {
-          temperatureContainerEl.style = null;
-          var temperatureEl =
-            temperatureContainerEl.querySelector("#temperature");
-          temperatureEl.innerHTML = temperature;
-        }
-      });
-  }
-}
-var postsBaseUrl = "https://jsonplaceholder.typicode.com";
 function runPostsApp() {
   var postsBaseUrl = "https://jsonplaceholder.typicode.com";
   var postsContainerEl = document.querySelector("#posts-container");
- 
 
   function renderPostList(posts) {
     posts.forEach(function (post) {
@@ -41,34 +13,72 @@ function runPostsApp() {
   }
 
   function createPost(post) {
-    var div = document.createElement("div");
-    var button = document.createElement("button")
-    button.innerText = "delete"
-    
-  var updateButton = document.createElement("button")
-  updateButton.innerText ="Update"
+    var modalUpdateButton = document.querySelector("#updatePost");
+    var modalCancelButton = document.querySelector("#cancel");
 
-  updateButton.onclick = function(){
-    var modal = document.createElement("div");
-   
-  }
-    button.onclick = function (){
+    var div = document.createElement("div");
+    var deleteButton = document.createElement("button");
+    deleteButton.innerHTML = "Delete Post";
+    var editButton = document.createElement("button");
+    editButton.innerHTML = "Edit Post";
+
+    deleteButton.onclick = function () {
       fetch(postsBaseUrl + "/posts/" + post.id, {
         method: "DELETE",
-        headers: {
-            'Content-type': 'application/json'
+      }).then((response) => {
+        if (response) {
+          div.remove();
         }
-      })
-      .then(res => {
-        if (res.ok) { div.remove()}
-        else { console.log("Could not delete") }
-        return res
-      })
-      .then(res => res.json())
-      .then(data => console.log(data))
-      
+        return response;
+      });
+    };
 
-    }
+    editButton.onclick = function () {
+      document
+        .getElementById("updatePostModal")
+        .classList.add("modalDisplayed");
+      document
+        .getElementById("updatePostModal")
+        .classList.remove("modalHidden");
+
+      var inputTitle = (document.getElementById("title").value = post.title);
+      var inputBody = (document.getElementById("body").value = post.body);
+     
+      modalUpdateButton.onclick = () => {
+        const updTitle = document.getElementById("title").value;
+        const updBody = document.getElementById("body").value;
+
+        fetch(postsBaseUrl + "/posts/" + post.id, {
+          method: "PUT",
+          body: JSON.stringify({
+            title: updTitle,
+            body: updBody,
+          }),
+          headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+          .then((response) => response.json())
+          .then((json) => console.log(json))
+          .then(
+            (div.innerHTML =
+              "<div class='post-title'>" +
+              "<h2>" +
+              updTitle +
+              "</h2>" +
+              "</div><p class='post-body'>" +
+              updBody +
+              "</p>")
+          )
+          .then((div.appendChild(deleteButton), div.appendChild(editButton)));
+      };
+    };
+
+    modalCancelButton.onclick = function () {
+      document
+        .getElementById("updatePostModal")
+        .classList.remove("modalDisplayed");
+      document.getElementById("updatePostModal").classList.add("modalHidden");
+    };
+    
     div.innerHTML =
       "<div class='post-title'>" +
       "<h2>" +
@@ -76,14 +86,14 @@ function runPostsApp() {
       "</h2>" +
       "</div><p class='post-body'>" +
       post.body +
-      "</p>"
-      ;
-    div.appendChild(button);
-    div.appendChild(updateButton);
-    
+      "</p>";
+
+    div.appendChild(deleteButton);
+    div.appendChild(editButton);
+
     return div;
   }
- 
+
   fetch(postsBaseUrl + "/posts")
     .then(function (response) {
       return response.json();
@@ -93,10 +103,7 @@ function runPostsApp() {
     });
 }
 
-
-
 var pageInit = function () {
-  runWeatherApp();
   runPostsApp();
 };
 
